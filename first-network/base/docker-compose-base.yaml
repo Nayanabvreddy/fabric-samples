@@ -1,0 +1,108 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+services:
+
+  orderer.supplychain.com:
+    container_name: orderer.supplychain.com
+    image: hyperledger/fabric-orderer
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      # enabled TLS
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+    - ../channel-artifacts/genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+    - ../crypto-config/ordererOrganizations/supplychain.com/orderers/orderer.supplychain.com/msp:/var/hyperledger/orderer/msp
+    - ../crypto-config/ordererOrganizations/supplychain.com/orderers/orderer.supplychain.com/tls/:/var/hyperledger/orderer/tls
+    ports:
+      - 7050:7050
+
+  peer0.manufacturer.supplychain.com:
+    container_name: peer0.manufacturer.supplychain.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.manufacturer.supplychain.com
+      - CORE_PEER_ADDRESS=peer0.manufacturer.supplychain.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.manufacturer.supplychain.com:7051
+      - CORE_PEER_LOCALMSPID=ManufacturerMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/manufacturer.supplychain.com/peers/peer0.manufacturer.supplychain.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/manufacturer.supplychain.com/peers/peer0.manufacturer.supplychain.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 7051:7051
+      - 7053:7053
+
+  peer0.distributor.supplychain.com:
+    container_name: peer0.distributor.supplychain.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.distributor.supplychain.com
+      - CORE_PEER_ADDRESS=peer0.distributor.supplychain.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.distributor.supplychain.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.distributor.supplychain.com:7051
+      - CORE_PEER_LOCALMSPID=DistributorMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/distributor.supplychain.com/peers/peer0.distributor.supplychain.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/distributor.supplychain.com/peers/peer0.distributor.supplychain.com/tls:/etc/hyperledger/fabric/tls
+
+    ports:
+      - 8051:7051
+      - 8053:7053
+
+  peer0.vendor.supplychain.com:
+    container_name: peer0.vendor.supplychain.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.vendor.supplychain.com
+      - CORE_PEER_ADDRESS=peer0.vendor.supplychain.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.vendor.supplychain.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.vendor.supplychain.com:7051
+      - CORE_PEER_LOCALMSPID=VendorMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/vendor.supplychain.com/peers/peer0.vendor.supplychain.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/vendor.supplychain.com/peers/peer0.vendor.supplychain.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 9051:7051
+      - 9053:7053
+
+  peer0.retailer.supplychain.com:
+    container_name: peer0.retailer.supplychain.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - CORE_PEER_ID=peer0.retailer.supplychain.com
+      - CORE_PEER_ADDRESS=peer0.retailer.supplychain.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.retailer.supplychain.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.retailer.supplychain.com:7051
+      - CORE_PEER_LOCALMSPID=RetailerMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/retailer.supplychain.com/peers/peer0.retailer.supplychain.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/retailer.supplychain.com/peers/peer0.retailer.supplychain.com/tls:/etc/hyperledger/fabric/tls
+    ports:
+      - 10051:7051
+      - 10053:7053
