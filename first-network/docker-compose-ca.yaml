@@ -1,0 +1,77 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+networks:
+  byfn:
+services:
+  ca0:
+    image: hyperledger/fabric-ca
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-manufacturer
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.manufacturer.supplychain.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/25b5013db08ac6c3fca4a32e3484032d75ce3c11dccf328f44a9a9b1ce9a69cc_sk
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.manufacturer.supplychain.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/25b5013db08ac6c3fca4a32e3484032d75ce3c11dccf328f44a9a9b1ce9a69cc_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/manufacturer.supplychain.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_manufacturer
+    networks:
+      - byfn
+
+  ca1:
+    image: hyperledger/fabric-ca
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-distributor
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.distributor.supplychain.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/51a20fe23f8427b3828f8b51e9618e818cabdb14b58883c7f38fa4e7364a3d48_sk
+    ports:
+      - "8054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.distributor.supplychain.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/51a20fe23f8427b3828f8b51e9618e818cabdb14b58883c7f38fa4e7364a3d48_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/distributor.supplychain.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_distributor
+    networks:
+      - byfn
+  ca2:
+    image: hyperledger/fabric-ca
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-vendor
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.vendor.supplychain.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/36854edee4fcdcb3118f516dacee07f681d92d9597a5df0733b064f018a6d40a_sk
+    ports:
+      - "9054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.vendor.supplychain.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/36854edee4fcdcb3118f516dacee07f681d92d9597a5df0733b064f018a6d40a_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/vendor.supplychain.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_vendor
+    networks:
+      - byfn
+
+  ca3:
+    image: hyperledger/fabric-ca
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca-retailer
+      - FABRIC_CA_SERVER_TLS_ENABLED=true
+      - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.retailer.supplychain.com-cert.pem
+      - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/682582bbfdb62ff0ac8c8b1dbc6e95b31bcccef193e3f8a12a023565f7c53f9f_sk
+    ports:
+      - "10054:7054"
+    command: sh -c 'fabric-ca-server start --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.retailer.supplychain.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/682582bbfdb62ff0ac8c8b1dbc6e95b31bcccef193e3f8a12a023565f7c53f9f_sk -b admin:adminpw -d'
+    volumes:
+      - ./crypto-config/peerOrganizations/retailer.supplychain.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca_retailer
+    networks:
+      - byfn
+
